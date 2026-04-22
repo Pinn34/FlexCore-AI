@@ -1,1 +1,475 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlexCore AI</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Inter;
+}
+
+body{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background: radial-gradient(circle at top,#0d0d0d,#050505);
+  overflow:hidden;
+  color:#e5e5e5;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(31,111,235,0.15), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(0,212,255,0.12), transparent 40%);
+  animation:moveBg 8s infinite alternate ease-in-out;
+  z-index:-1;
+}
+
+@keyframes moveBg{
+  from{transform:scale(1);}
+  to{transform:scale(1.1) translateY(-20px);}
+}
+
+/* LOGIN */
+#loginScreen{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#000;
+  z-index:9999;
+}
+
+.loginBox{
+  width:320px;
+  padding:20px;
+  border-radius:14px;
+  background:rgba(20,20,20,0.6);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+input{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  color:#fff;
+  outline:none;
+}
+
+button{
+  padding:10px 14px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(135deg,#1f6feb,#00d4ff);
+}
+
+/* TOPBAR */
+.topBar{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+}
+
+.leftIsland{
+  padding:8px 14px;
+  border-radius:50px;
+  background:rgba(20,20,20,0.6);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+  font-size:12px;
+}
+
+.centerTitle{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  padding:8px 16px;
+  border-radius:50px;
+  background:rgba(20,20,20,0.7);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+  font-size:13px;
+  font-weight:600;
+}
+
+.rightIsland{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:50px;
+  background:rgba(20,20,20,0.6);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.rightIsland img{
+  width:24px;
+  height:24px;
+  border-radius:50%;
+}
+
+/* CHAT */
+.chat{
+  flex:1;
+  padding:18px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.wrap{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+}
+
+.chatAvatar{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+}
+
+.msg{
+  max-width:70%;
+  padding:10px;
+  border-radius:12px;
+}
+
+.user{
+  align-self:flex-end;
+  background:linear-gradient(135deg,#1f6feb,#144a9c);
+}
+
+.ai{
+  align-self:flex-start;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+/* INPUT */
+.input{
+  display:flex;
+  gap:10px;
+  padding:14px;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+
+.sendBtn{
+  width:50px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.sendBtn svg{
+  width:20px;
+  height:20px;
+  fill:white;
+}
+
+/* HISTORY */
+#historyPanel{
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  width:220px;
+  background:#111;
+  border-right:1px solid #222;
+  padding:10px;
+  overflow:auto;
+  transform:translateX(-100%);
+  transition:.3s;
+  z-index:9998;
+}
+
+#historyPanel.show{
+  transform:translateX(0);
+}
+
+.room{
+  padding:8px;
+  margin-top:5px;
+  background:#222;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+/* TOGGLE BTN */
+#toggleBtn{
+  position:fixed;
+  right:15px;
+  bottom:80px;
+  width:45px;
+  height:45px;
+  border-radius:12px;
+  z-index:9999;
+  transition:.2s;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="loginBox">
+    <h3>Login</h3>
+    <input id="usernameInput" placeholder="username">
+    <input type="file" id="photoInput">
+    <button onclick="login()">Masuk</button>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="historyPanel">
+  <button onclick="newChat()" style="
+width:32px;height:32px;border-radius:10px;
+display:flex;align-items:center;justify-content:center;
+margin-bottom:10px;
+">+</button>
+
+  <div id="roomList"></div>
+</div>
+
+<!-- TOGGLE BUTTON -->
+<button id="toggleBtn" onclick="toggleHistory()">☰</button>
+
+<!-- TOPBAR -->
+<div class="topBar">
+  <div class="leftIsland">AI ONLINE</div>
+  <div class="centerTitle">FlexCore AI</div>
+
+  <div class="rightIsland">
+    <img id="avatarSmall">
+    <span id="nameSmall"></span>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="chat" id="chat"></div>
+
+<!-- INPUT -->
+<div class="input">
+  <input id="input" placeholder="Message...">
+
+  <button class="sendBtn" onclick="send()">
+    <svg viewBox="0 0 24 24">
+      <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+
+let profile={}
+let rooms = JSON.parse(localStorage.getItem("rooms")||"{}")
+let currentRoom="room_1"
+
+if(!rooms[currentRoom]){
+  rooms[currentRoom]={
+    title:"",
+    messages:[]
+  }
+}
+
+function save(){
+  localStorage.setItem("rooms",JSON.stringify(rooms))
+}
+
+/* TOGGLE + ANIMATION ICON */
+function toggleHistory(){
+  const panel=document.getElementById("historyPanel")
+  const btn=document.getElementById("toggleBtn")
+
+  panel.classList.toggle("show")
+
+  if(panel.classList.contains("show")){
+    btn.innerText="*"
+  }else{
+    btn.innerText="☰"
+  }
+}
+
+/* LOGIN */
+function login(){
+  const name=document.getElementById("usernameInput").value
+  const file=document.getElementById("photoInput").files[0]
+  if(!name) return
+
+  profile.name=name
+
+  if(file){
+    const r=new FileReader()
+    r.onload=e=>{
+      profile.avatar=e.target.result
+      afterLogin()
+    }
+    r.readAsDataURL(file)
+  }else{
+    profile.avatar=""
+    afterLogin()
+  }
+}
+
+function afterLogin(){
+  document.getElementById("loginScreen").style.display="none"
+  document.getElementById("nameSmall").innerText=profile.name
+  document.getElementById("avatarSmall").src=profile.avatar
+
+  renderRooms()
+  loadRoom()
+}
+
+/* CHAT */
+function add(text,type,avatar,saveMsg=true){
+  const chat=document.getElementById("chat")
+
+  const wrap=document.createElement("div")
+  wrap.className="wrap"
+
+  const img=document.createElement("img")
+  img.className="chatAvatar"
+  img.src=avatar
+
+  const msg=document.createElement("div")
+  msg.className="msg "+type
+  msg.innerText=text
+
+  if(type==="user"){
+    wrap.appendChild(msg)
+    wrap.appendChild(img)
+    wrap.style.justifyContent="flex-end"
+  }else{
+    wrap.appendChild(img)
+    wrap.appendChild(msg)
+  }
+
+  chat.appendChild(wrap)
+  chat.scrollTop=chat.scrollHeight
+
+  if(saveMsg){
+    if(rooms[currentRoom].messages.length===0){
+      rooms[currentRoom].title = text.slice(0,20)
+    }
+
+    rooms[currentRoom].messages.push({text,type})
+    save()
+    renderRooms()
+  }
+}
+
+/* NEW CHAT (KOSONG BANGET) */
+function newChat(){
+  const id="room_"+Date.now()
+
+  rooms[id]={
+    title:"",
+    messages:[]
+  }
+
+  currentRoom=id
+  save()
+  renderRooms()
+  loadRoom()
+}
+
+/* HISTORY */
+function renderRooms(){
+  const list=document.getElementById("roomList")
+  list.innerHTML=""
+
+  Object.keys(rooms).forEach(id=>{
+    const div=document.createElement("div")
+    div.className="room"
+
+    div.innerText = rooms[id].title || "Chat Baru"
+
+    div.onclick=()=>{
+      currentRoom=id
+      loadRoom()
+    }
+
+    list.appendChild(div)
+  })
+}
+
+/* LOAD CHAT */
+function loadRoom(){
+  const chat=document.getElementById("chat")
+  chat.innerHTML=""
+
+  rooms[currentRoom].messages.forEach(m=>{
+    add(m.text,m.type,profile.avatar,false)
+  })
+}
+
+/* SEND */
+function send(){
+  const v=document.getElementById("input").value
+  if(!v) return
+
+  add(v,"user",profile.avatar)
+  document.getElementById("input").value=""
+
+  setTimeout(()=>{
+    typeWriter("AI: "+v,"ai","https://i.pravatar.cc/101")
+  },400)
+}
+
+/* TYPEWRITER */
+function typeWriter(text,type,avatar){
+  const chat=document.getElementById("chat")
+
+  const wrap=document.createElement("div")
+  wrap.className="wrap"
+
+  const img=document.createElement("img")
+  img.className="chatAvatar"
+  img.src=avatar
+
+  const msg=document.createElement("div")
+  msg.className="msg "+type
+
+  wrap.appendChild(img)
+  wrap.appendChild(msg)
+  chat.appendChild(wrap)
+
+  let i=0
+  function loop(){
+    if(i<text.length){
+      msg.innerText+=text[i]
+      i++
+      chat.scrollTop=chat.scrollHeight
+      setTimeout(loop,15)
+    }
+  }
+  loop()
+}
+
+</script>
+
+</body>
+</html>
