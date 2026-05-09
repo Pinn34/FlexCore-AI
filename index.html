@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Info Kaizyy</title>
+    
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #050505;
+            --surface: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #00ff88;
+            --accent-glow: rgba(0, 255, 136, 0.15);
+            --text-main: #f0f0f0;
+            --text-muted: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.7;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(0, 255, 136, 0.03) 0%, transparent 50%);
+        }
+
+        /* Ganti Font Judul Biar Gahar */
+        h1, h2, h3, .logo, .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        a {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Sticky Glass Navbar */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(5, 5, 5, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 0;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Container buat gabungin Nav link sama Avatar */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        nav ul li a {
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           CSS AVATAR & POPUP UPGRADE ESTETIK 
+           ========================================= */
+        
+        /* Tombol Profil di Kanan Atas */
+        .avatar-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            object-fit: cover;
+            padding: 2px; /* Jarak border estetik */
+            background: linear-gradient(135deg, var(--accent), #00f2fe);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+
+        .avatar-btn:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Overlay Background Gelap untuk Popup */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px); /* Efek Blur Premium */
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        /* Munculin Popup kalau active */
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Kotak Popup nya - Glassmorphism */
+        .popup-content {
+            background: rgba(15, 15, 15, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(0, 255, 136, 0.4); /* Garis neon di atas */
+            width: 90%;
+            max-width: 420px;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            transform: translateY(30px) scale(0.95); /* Efek nongol dari bawah */
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 136, 0.1);
+        }
+
+        .popup-overlay.active .popup-content {
+            transform: translateY(0) scale(1);
+        }
+
+        /* Tombol Close silang (X) Estetik */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+            background: rgba(255, 50, 50, 0.8);
+            transform: rotate(90deg);
+        }
+
+        /* Foto Profil di dalem Popup (Efek Ngambang) */
+        .popup-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            padding: 3px;
+            background: linear-gradient(135deg, var(--accent), #00f2fe);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
+            animation: floatAvatar 3s ease-in-out infinite;
+        }
+
+        @keyframes floatAvatar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .popup-title {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .popup-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-top: 15px;
+        }
+        /* =========================================
+           END CSS AVATAR & POPUP
+           ========================================= */
+
+        /* CSS KHUSUS TOMBOL MUSIK */
+        .music-toggle {
+            font-size: 24px;
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: -10px;
+        }
+        .music-toggle:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 10px var(--accent);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 80px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 13px;
+            color: var(--accent);
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .hero h1 {
+            font-size: clamp(40px, 6vw, 72px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 span {
+            color: var(--text-muted);
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        /* Glassmorphism Cards */
+        .grid-layout {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 120px;
+        }
+
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+        .glass-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top right, var(--accent-glow), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 255, 136, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .glass-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Typography & Utilities */
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            letter-spacing: -0.5px;
+        }
+
+        h3 { font-size: 20px; margin-bottom: 12px; font-weight: 600; position: relative; z-index: 1;}
+        p { position: relative; z-index: 1; }
+        .role { color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 16px; font-weight: 600; font-family: 'Orbitron', sans-serif;}
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--text-main);
+            color: #000;
+            padding: 16px 32px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .btn:hover {
+            background: transparent;
+            color: var(--text-main);
+            border-color: var(--text-main);
+            transform: scale(1.05);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 60px 0 40px;
+            text-align: center;
+        }
+        
+        .footer-logo { font-size: 24px; font-weight: 800; letter-spacing: 2px; margin-bottom: 10px; color: #fff;}
+        .footer-links { display: flex; justify-content: center; gap: 30px; margin: 30px 0; }
+        
+        .footer-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: var(--accent-glow);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.1);
+        }
+
+        .copyright { color: #555; font-size: 14px; font-family: 'Orbitron', sans-serif; }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+
+        .product-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 900px) {
+            .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
+            nav ul { display: none; }
+        }
+        @media (max-width: 600px) {
+            .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 40px; }
+            .nav-right { gap: 15px; } 
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container nav-content">
+            <div class="logo">#404 Kaizyy</div>
+            <div class="nav-right">
+                <nav>
+                    <ul>
+                        <li><a href="#about">Layanan</a></li>
+                        <li><a href="#mindset">Testimoni</a></li>
+                        <li><a href="#contact">Order Now</a></li>
+                    </ul>
+                </nav>
+                <i class='bx bx-music music-toggle' id="musicToggle"></i>
+                <img src="https://cdn.phototourl.com/free/2026-05-09-a4f99a15-4dc7-402e-b6fd-48f3dab7e4eb.jpg" alt="Profil Kaizyy" class="avatar-btn" id="openPopupBtn">
+            </div>
+        </div>
+    </header>
+
+    <div class="popup-overlay" id="profilPopup">
+        <div class="popup-content">
+            <i class='bx bx-x close-btn' id="closePopupBtn"></i>
+            
+            <img src="https://cdn.phototourl.com/free/2026-05-09-a4f99a15-4dc7-402e-b6fd-48f3dab7e4eb.jpg" alt="Profil Kaizyy" class="popup-avatar">
+            
+            <h2 class="popup-title">404 Kaizyy</h2>
+            <span class="role" style="margin-bottom: 10px;">Developer</span>
+            
+            <p class="popup-desc">
+                Gue Kaizyy, Gue Tipe orang yang lebih suka jadi diri sendiri santai, tengil, tapi asli daripada sibuk akting demi validasi. Buat gue, tindakan nyata jauh lebih berharga dibanding janji manis..
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="hero animate-up">
+            <div class="badge">— Trusted Services</div>
+            <h1>Semua Kebutuhan <span>Jualan Lo</span> Ada di Sini.</h1>
+            <p>Nggak usah pusing lagi. Gue siap selesain masalah lo mulai dari web payment, script bug, store, order nokos otomatis,  panel pterodactyl, sampai bikin security script mu agar script mu aman tidak bisa asal dipakai oranglain.      
+            Kualitas terjamin, harga aman di kantong!</p>
+            <a href="#contact" class="btn">Order Sekarang</a>
+        </section>
+
+        <section id="about" class="animate-up delay-2">
+            <h2 class="section-title">Layanan & Produk</h2>
+            <div class="grid-layout grid-2">
+                
+                <div class="glass-card">
+                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800&h=400" alt="Produk 1" class="product-img">
+                    <h3>Bot Auto Order Nokos</h3>
+                    <p style="color: var(--text-muted);">Sistem bot otomatis buat order nomor kosong whatsapp/telegram. Menu layout estetik, langsung siap pakai buat ningkatin jualan lo.</p>
+                </div>
+                
+                <div class="glass-card">
+                    <img src="https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&q=80&w=800&h=400" alt="Produk 2" class="product-img">
+                    <h3> Panel Pterodactyl (legal)</h3>
+                    <p style="color: var(--text-muted);">Pterodactyl Panel buat jalanin script lu atau hosting bot Node.js lo. Server stabil, dan siap tempur seharian.</p>
+                </div>
+                
+                <div class="glass-card">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800&h=400" alt="Produk 3" class="product-img">
+                    <h3>Script Security (Anti-Bobol)</h3>
+                    <p style="color: var(--text-muted);">Bikin script lo aman dari orng ga bertanggung jawab. Dilengkapi obfuscation tingkat tinggi dan sistem verifikasi via GitHub. Biar gak gampang dipake orang!</p>
+                </div>
+                
+                <div class="glass-card">
+                    <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=800&h=400" alt="Produk 4" class="product-img">
+                    <h3>Fix Error Script</h3>
+                    <p style="color: var(--text-muted);">Pusing bot sering crash? Gue benerin error script lo sampai jalan normal lagi tanpa ngerusak fitur lain yang udah ada.</p>
+                </div>
+
+                <div class="glass-card">
+                    <img src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&q=80&w=800&h=400" alt="Produk 5" class="product-img">
+                    <h3>Convert Panel to Termux</h3>
+                    <p style="color: var(--text-muted);">Convert script yang awalnya running di panel nanti biar bisa juga running di Termux Android. Fleksibel, bisa dipantau kapan aja lewat HP.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mindset" class="animate-up delay-2">
+            <h2 class="section-title">Kenapa Pilih Kaizyy?</h2>
+            <div class="grid-layout grid-3">
+                <div class="glass-card">
+                    <span class="role">Verified Seller</span>
+                    <h3>Terpercaya 100% <i class='bx bxs-badge-check' style='color:#1da1f2'></i></h3>
+                    <p style="color: var(--text-muted);">Nggak ada riwayat nipu, apalagi lari dari tanggung jawab. Duit masuk, orderan langsung dikerjain. Amanah poll pokonya.</p>
+                </div>
+                <div class="glass-card">
+                    <span class="role">Speed Run</span>
+                    <h3>Fast Respon <i class='bx bxs-zap' style='color:#eab308'></i></h3>
+                    <p style="color: var(--text-muted);">Chat lo bakal dibales secepat kilat. Nggak pake lama, nggak cacicu. Langsung to the point, bahas orderan, deal, eksekusi.</p>
+                </div>
+                <div class="glass-card">
+                    <span class="role">Premium Quality</span>
+                    <h3>Kualitas Terbaik <i class='bx bxs-diamond' style='color:#00ff88'></i></h3>
+                    <p style="color: var(--text-muted);">Gue cuma ngasih hasil yang rapi, tampilan estetik, dan semuanya dites dulu sebelum dikasih ke lo biar nggak ada bug ataupun eror.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-logo">404 Kaizyy</div>
+            <p style="color: var(--text-muted);">Tunggu apa lagi? Langsung klik logo di bawah buat order atau tanya-tanya. btw php mati aja🗿</p>
+            
+            <div class="footer-links">
+                <a href="https://wa.me/62895373244446" target="_blank" title="WhatsApp">
+                    <i class='bx bxl-whatsapp' style='font-size: 24px;'></i>
+                </a>
+                <a href="https://t.me/zyyneweraa" target="_blank" title="Telegram">
+                    <i class='bx bxl-telegram' style='font-size: 24px;'></i>
+                </a>
+                <a href="https://github.com/username_lo" class="social-item">
+                    <i class='bx bxl-github'></i>
+                </a>
+                <a href="https://t.me/kaiineweraa" target="_blank" title="Logs">
+                    <i class='bx bx-code-alt' style='font-size: 24px;'></i>
+                </a>
+                
+            </div>
+            
+            <p class="copyright">© 2026 Kaizyy. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <audio id="bossSound" loop>
+        <source src="https://still-peach-exhebx9zi5.edgeone.app/Hal%20-%20L%20(Lyrics%20Video)%20(320).mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const popup = document.getElementById('profilPopup');
+        const openBtn = document.getElementById('openPopupBtn');
+        const closeBtn = document.getElementById('closePopupBtn');
+        const audio = document.getElementById('bossSound');
+        const musicToggle = document.getElementById('musicToggle');
+
+        // Buka popup pas foto diklik
+        openBtn.addEventListener('click', () => {
+            popup.classList.add('active');
+        });
+
+        // Tutup popup pas silang diklik
+        closeBtn.addEventListener('click', () => {
+            popup.classList.remove('active');
+        });
+
+        // Tutup popup pas ngeklik area gelap di luar kotak
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                popup.classList.remove('active');
+            }
+        });
+
+        // FUNGSI MUSIK ON/OFF
+        function togglePlay() {
+            if (audio.paused) {
+                audio.volume = 0.5;
+                audio.play();
+                musicToggle.className = 'bx bx-volume-full music-toggle'; // Ganti icon pas nyala
+            } else {
+                audio.pause();
+                musicToggle.className = 'bx bx-volume-mute music-toggle'; // Ganti icon pas mati
+            }
+        }
+
+        musicToggle.addEventListener('click', togglePlay);
+
+        // Awal on otomatis setelah klik pertama di mana saja
+        window.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.volume = 0.5;
+                audio.play();
+                musicToggle.className = 'bx bx-volume-full music-toggle';
+            }
+        }, { once: true });
+    </script>
+
+</body>
+</html>
